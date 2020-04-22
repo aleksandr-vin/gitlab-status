@@ -13,10 +13,10 @@ Spin up Elasticsearch & Kibana:
 docker-compose up
 ```
 
-Ingest from Gitlab:
+Ingest 1 days of pipelines' updates from Gitlab:
 
 ```
-docker-compose run --rm ingest now
+docker-compose run --rm ingest 1d
 ```
 
 Wait until execution ends and go to http://localhost:5600

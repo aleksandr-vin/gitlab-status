@@ -4,7 +4,6 @@ services:
     build: ./ingest
     env_file: .env
     environment:
-      GITLAB_URL: https://gitlab.com
       ES_HOSTS: elasticsearch
     depends_on:
       - elasticsearch

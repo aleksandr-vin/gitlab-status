@@ -9,7 +9,7 @@ RUN pip install -r requirements.txt
 
 COPY . /src
 
-RUN pip install .
+RUN pip install -e .
 
 ENTRYPOINT ["ingest"]
 CMD ["help"]
