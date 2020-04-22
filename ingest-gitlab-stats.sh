@@ -3,7 +3,8 @@
 # Script for cron job
 #
 # Crontab schedule line example:
-# 10 * * * *       $PATH/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 2>&1
+# 15 */3 * * *       $PATH/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 1d 2>&1
+# 45 10,14,16 * * 1       $PATH/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 3d 2>&1
 #
 
 export PATH="/usr/local/bin:$PATH"
@@ -11,9 +12,8 @@ export PATH="/usr/local/bin:$PATH"
 DOCKER_COMPOSE="/usr/local/bin/docker-compose --no-ansi"
 
 set -e
-set -x
 
-cd "$1"
+cd "${1:-.}"
 
 # Save initial ES running status
 set +e
@@ -22,7 +22,7 @@ es_status=$?
 set -e
 
 # Ingest Gitlab pipelines status
-${DOCKER_COMPOSE} run --rm ingest now
+${DOCKER_COMPOSE} run --rm ingest ${2:-now}
 
 # Stop ES if it was not running and Kibana is not running now
 set +e
