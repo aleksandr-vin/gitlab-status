@@ -88,18 +88,18 @@ def parse_time_delta(time_str):
 def main():
   delta = timedelta(days=1)
   print(f"Arguments: {sys.argv}", file=sys.stderr)
-  if len(sys.argv) > 1 and sys.argv[1].strip() == "now":
-    while not es.ping():
-      print("Waiting for elasticsearch...", file=sys.stderr)
-      sleep(1)
-  elif len(sys.argv) > 1:
+  if len(sys.argv) > 1:
     delta = parse_time_delta(sys.argv[1].strip())
     if not delta:
       print("Provide time delta in format 1d2h30m")
       exit(1)
   else:
-    print("To ingest gitlab pipelines stats run 'ingest now' or 'ingest 2d'")
+    print("To ingest gitlab stats for pipelines updated up to 2 days old from now, run 'ingest 2d'")
     exit(0)
+
+  while not es.ping():
+    print("Waiting for elasticsearch...", file=sys.stderr)
+    sleep(1)
 
   print(f"Ingesting updates up to {delta} old...", file=sys.stderr)
 
