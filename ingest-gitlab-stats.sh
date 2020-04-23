@@ -3,8 +3,8 @@
 # Script for cron job
 #
 # Crontab schedule line example:
-## at 15 min of 3am, 6am, 9am, 12am..., everyday
-# 15 0-23/3 * * *       $HOME/bin/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 1d 2>&1
+## at 15 min of 2am, 4am, 6am, 8am..., everyday
+# 15 0-23/2 * * *       $HOME/bin/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 1d 2>&1
 ## at 45 min of 10, 14 and 16 hour of Monday
 # 45 10,14,16 * * 1     $HOME/bin/ingest-gitlab-stats.sh ~/Developer/gitlab-pipeline-stats 3d 2>&1
 #
@@ -24,7 +24,7 @@ es_status=$?
 set -e
 
 # Ingest Gitlab pipelines status
-${DOCKER_COMPOSE} run --rm ingest ${2:-6h}
+${DOCKER_COMPOSE} run --rm ingest --dump-config ${2:-6h}
 
 # Stop ES if it was not running and Kibana is not running now
 set +e

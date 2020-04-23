@@ -12,4 +12,4 @@ COPY . /src
 RUN pip install -e .
 
 ENTRYPOINT ["ingest"]
-CMD ["help"]
+CMD ["--help"]

@@ -24,4 +24,6 @@ Wait until execution ends and go to http://localhost:5600
 
 ## Notes
 
-Data is persisted in Docker volumes, check `docker volume` on how to prune.
+1. Data is persisted in Docker volumes, check `docker volume` on how to prune.
+
+2. Run `docker-compose build` after gut pulls.
