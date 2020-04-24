@@ -21,6 +21,11 @@ docker-compose run --rm ingest 1d
 
 Wait until execution ends and go to http://localhost:5600
 
+Import saved objects to Kibana if you want to play with the pre-created dashboards, visualisations and indices:
+
+```
+./import-saved-objects.sh
+```
 
 ## Notes
 
