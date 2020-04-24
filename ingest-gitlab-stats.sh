@@ -24,7 +24,10 @@ es_status=$?
 set -e
 
 # Ingest Gitlab pipelines status
-${DOCKER_COMPOSE} run --rm ingest --dump-config ${2:-6h}
+delta=${2:-6h}
+shift
+shift
+${DOCKER_COMPOSE} run --rm ingest --dump-config $delta $*
 
 # Stop ES if it was not running and Kibana is not running now
 set +e
