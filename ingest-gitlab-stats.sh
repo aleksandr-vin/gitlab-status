@@ -27,6 +27,7 @@ set -e
 delta=${2:-6h}
 shift
 shift
+${DOCKER_COMPOSE} run --rm ingest --dump-config --no-pipelines --no-merge-requests --check-missing-intervals 30d $*
 ${DOCKER_COMPOSE} run --rm ingest --dump-config $delta $*
 
 # Stop ES if it was not running and Kibana is not running now

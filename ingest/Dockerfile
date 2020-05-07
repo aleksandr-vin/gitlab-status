@@ -12,4 +12,4 @@ COPY . /src
 RUN pip install -e .
 
 ENTRYPOINT ["ingest"]
-CMD ["--help"]
+CMD ["--no-pipelines", "--no-merge-requests", "--check-missing-intervals", "30d"]
