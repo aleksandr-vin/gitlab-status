@@ -49,6 +49,7 @@ def process_jobs(jobs):
     ingest_job(ts, j.id, j._attrs)
 
 def process_pipelines(pipelines, start_from):
+  ts = datetime.now(timezone.utc)
   for p in pipelines:
     updated = dateutil.parser.parse(p.updated_at)
     if updated < start_from:
@@ -65,6 +66,7 @@ def process_merge_request_versions(versions):
     ingest_merge_request_version(ts, v.id, v._attrs)
 
 def process_merge_requests(merge_requests, start_from):
+  ts = datetime.now(timezone.utc)
   for mr in merge_requests:
     updated = dateutil.parser.parse(mr.updated_at)
     if updated < start_from:
