@@ -130,7 +130,7 @@ def check_missing_intervals(delta, start_from, end_till):
       s = hit["_source"]
       s_from = dateutil.parser.parse(s["start_from"])
       s_to = dateutil.parser.parse(s["end_till"])
-      intervals.append({'from': s_from, 'to': s_to, 'source': s})
+      intervals.append({'from': s_from, 'to': s_to, 'sources': [s]})
 
     intervals = intervals[:1] # keeping the first -- the most valuable by the end_till inclusion
 
@@ -169,12 +169,13 @@ def check_missing_intervals(delta, start_from, end_till):
       s_from = dateutil.parser.parse(s["start_from"])
       s_to = dateutil.parser.parse(s["end_till"])
       if len(intervals) == 0:
-        intervals.append({'from': s_from, 'to': s_to, 'source': s})
+        intervals.append({'from': s_from, 'to': s_to, 'sources': [s]})
       elif s_from > intervals[-1]["to"]:
         missing.append({'from': intervals[-1]["to"], 'to':  s_from})
-        intervals.append({'from': s_from, 'to': s_to, 'source': s})
+        intervals.append({'from': s_from, 'to': s_to, 'sources': [s]})
       elif intervals[-1]["to"] < s_to:
-        intervals.append({'from': s_from, 'to': s_to, 'source': s})
+        intervals[-1]["to"] = s_to
+        intervals[-1]["sources"].append(s)
 
     if len(intervals) > 0 and intervals[-1]["to"] < end_till:
       missing.append({'from': intervals[-1]["to"], 'to':  end_till})
@@ -189,7 +190,7 @@ def check_missing_intervals(delta, start_from, end_till):
     if len(intervals) > 0:
       print("Complete intervals:", file=sys.stderr)
       for i in intervals:
-        print(f"{i['from']} - {i['to']} ({i['to'] - i['from']})", file=sys.stderr)
+        print(f"{i['from']} - {i['to']} ({i['to'] - i['from']}): {len(i['sources'])} {'interval' if len(i['sources']) == 1 else 'intervals'}", file=sys.stderr)
     else:
       print("No complete intervals", file=sys.stderr)
 
@@ -244,8 +245,6 @@ def main():
   if not delta:
     print("Wrong delta format.", file=sys.stderr)
     exit(1)
-  else:
-    print(f"Ingesting updates up to {delta} old...", file=sys.stderr)
 
   if not args.fetch_only:
     es_hosts = [x.strip() for x in args.es_hosts.split()]
@@ -255,14 +254,15 @@ def main():
       print("Waiting for elasticsearch...", file=sys.stderr)
       sleep(1)
 
-  print(f"Fetching project {args.gitlab_project_id} ...", file=sys.stderr)
-  gl = gitlab.Gitlab(args.gitlab_url, private_token=gitlab_token)
-  project = gl.projects.get(args.gitlab_project_id)
+  if not args.no_merge_requests or not args.no_merge_requests:
+    print(f"Fetching project {args.gitlab_project_id} ...", file=sys.stderr)
+    gl = gitlab.Gitlab(args.gitlab_url, private_token=gitlab_token)
+    project = gl.projects.get(args.gitlab_project_id)
 
   ts = datetime.now(timezone.utc)
   start_from = ts - delta
   end_till = ts
-  print(f"Ingestion interval: {start_from.isoformat()} - {end_till.isoformat()}", file=sys.stderr)
+  print(f"Requested interval: {start_from.isoformat()} - {end_till.isoformat()} ({delta})", file=sys.stderr)
 
   if not args.no_pipelines:
     with ingestion('pipelines', delta, start_from, end_till) as i:
